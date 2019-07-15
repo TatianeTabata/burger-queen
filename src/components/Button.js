@@ -1,12 +1,16 @@
 import React from 'react';
-import './Button.css'
+import Button from '@material-ui/core/Button';
+
 
 function Button(props) {
-    return (
-      <button className="button" onClick={props.onClick} >
-        {props.text}
-      </button>
-    )
-  }
-  
-  export default Button;
+
+  const classes = useStyles();
+
+  return (
+    <Button variant="contained" color={props.color} className={classes.button}>
+      {props.text}
+    </Button>
+  )
+}
+
+export default Button;

@@ -1,5 +1,5 @@
 import React from 'react';
-import Input from './Input'
+import Input from '../components/Input'
 import firebase from '../firebaseConfig';
 import withFirebaseAuth from 'react-with-firebase-auth';
 import Button from '@material-ui/core/Button';
@@ -8,7 +8,7 @@ import logo_pb from '../images/logo_pb.png';
 const firebaseAppAuth = firebase.auth();
 const database = firebase.firestore();
 
-class Home extends React.Component {
+class Register extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -30,48 +30,32 @@ class Home extends React.Component {
     this.props.createUserWithEmailAndPassword(
       this.state.email, this.state.password)
       .then(resp => {
-        if (resp) { 
-        const id = resp.user.uid;
-        database.collection("users").doc(id).set({
-          email: this.state.email,
-          name: this.state.name,
-          tipo: this.state.tipo
-        })
-      .then(() => {
-        this.props.history.push(`/${this.state.tipo}`);
-      });
-  }
-})
-}
-
-
-  signIn = () => {
-    const { email, password } = this.state;
-    const { signInWithEmailAndPassword } = this.props;
-    signInWithEmailAndPassword(email, password)
-      .then((resp) => {   
-        const id = resp.user.uid;
-        database.collection("users").doc(id).get()  
-        .then(resp => {
-          const data = resp.data();
-          this.props.history.push(`/${data.tipo}`);
-        })  
-       
+        if (resp) {
+          if (this.state.tipo === "Salao" || this.state.tipo === "Kitchen") {
+            const id = resp.user.uid;
+            database.collection("users").doc(id).set({
+              email: this.state.email,
+              name: this.state.name,
+              tipo: this.state.tipo
+            })
+              .then(() => {
+                this.props.history.push(`/${this.state.tipo}`);
+              });
+          } else {
+            alert("Preencha todos os campos")
+          }
+        }
       })
   }
 
-  signOut = () => {
-
-  }
-
   render() {
-    if(this.props.error){
+    if (this.props.error) {
       alert(this.props.error);
     }
-    
+    console.log(this.props.user)
     return (
       <div>
-        <img src={logo_pb} className="logo"/>
+        <img src={logo_pb} className="logo" />
         <h2 className="boasvindas">Bem vindo! <br></br>Insira abaixo seu login ou cadastre-se.</h2>
         <Input value={this.state.name}
           text="Nome"
@@ -85,12 +69,10 @@ class Home extends React.Component {
         <select value={this.state.tipo} type="password"
           onChange={(e) => this.handleChange(e, "tipo")}>
           <option>Selecione</option>
-          <option>Cozinha</option>
+          <option>Kitchen</option>
           <option>Salao</option>
         </select>
         <br></br><br></br>
-        <Button onClick={this.signIn} variant="contained" color="secondary">Login</Button>        
-        <p>ou</p>
         <Button onClick={this.createUser} variant="contained" color="secondary">Criar usuário</Button>
       </div>
     )
@@ -100,4 +82,4 @@ class Home extends React.Component {
 
 export default withFirebaseAuth({
   firebaseAppAuth,
-})(Home);
+})(Register);
